@@ -85,9 +85,9 @@ namespace test_2
         private const int INPUT_KEYBOARD = 1;               // キーボードイベント
         private const int INPUT_HARDWARE = 2;               // ハードウェアイベント
 
-        private const int KEYEVENTF_KEYDOWN = 0x0;          // キーを押す
-        private const int KEYEVENTF_KEYUP = 0x2;            // キーを離す
-        private const int KEYEVENTF_EXTENDEDKEY = 0x1;      // 拡張コード
+        private const int KEYDOWN = 0x0;          // キーを押す
+        private const int KEYUP = 0x2;            // キーを離す
+        private const int EXTENDEDKEY = 0x1;      // 拡張コード
 
 
         //仮想キーコードが格納されているディクショナリー
@@ -112,7 +112,8 @@ namespace test_2
         //cmd処理に使うための配列
         List<string> cmdList = new List<string>();
 
-
+        //仮想キーコードオブジェクトを入れる配列
+        List<INPUT> inp = new List<INPUT>();
 
 
         public Form1()
@@ -140,7 +141,7 @@ namespace test_2
             }
 
             //初期値設定
-            basisState = jsonData.data[1];
+            basisState = jsonData.data[0];
             currentState = basisState;
 
         }
@@ -148,14 +149,14 @@ namespace test_2
         //Debug
         int deb = 0;
         //受け取ったキーコード(想定）
-        string[] debList = { "T_plus","T5","T000","T7"};
+        string[] debList = { "T6", "T5", "T8", "T5" };
 
         //ボタンが押された時の処理（クリックをキーコード受信だと想定）
         private void button1_Click_1(object sender, EventArgs e)
         {
-            
+
             //内部処理起動
-            Internalprocess(debList[deb]);
+            InternalProcess(debList[deb]);
 
             deb++;
 
@@ -170,7 +171,7 @@ namespace test_2
 
 
         //内部処理のメイン関数
-        public void Internalprocess(string keyCode)
+        public void InternalProcess(string keyCode)
         {
 
             //keysの中から、受け取ったkeyの場所を探し、その添え字を格納する変数
@@ -225,58 +226,18 @@ namespace test_2
         //送信関数
         public void Send(Key key)
         {
-            //debug
-            //string temp = "";
-            //for (int i = 0; i < key.value.Length; i++)
-            //{
-            //    for (int k = 0; k < key.value[i].Length; k++)
-            //    {
-            //        temp += key.value[i][k];
-            //    }
-            //}
-            //textBox1.Text = temp;
-            //Console.WriteLine("送信成功");
-
 
             // 自ウインドウを非表示(キーボード操作対象のウィンドウへフォーカスを移動するため)
             this.Visible = false;
-
-            // キーボード操作実行用のデータ（コマンド送信）
-            INPUT[] inp_cmd_send;
-            // キーボード操作実行用のデータ（全角半角）
-            INPUT[] inp_ime;
-            //命令要素数変数（コマンド送信）
-            int num_cmd_send;
-            //命令要素数変数（全角半角）
-            int num_ime;
-
 
             switch (basisState.name)
             {
                 //かな状態の時は全角
                 case "kana_basis":
-                    num_ime = 2;
-                    inp_ime = new INPUT[num_ime];
 
                     //全角状態にする
-                    inp_ime[0].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_ime[0].ki.wVk = (short)VK["hiragana"];
-                    inp_ime[0].ki.wScan = (short)MapVirtualKey(inp_ime[0].ki.wVk, 0);
-                    inp_ime[0].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYDOWN;
-                    inp_ime[0].ki.dwExtraInfo = 0;
-                    inp_ime[0].ki.time = 0;
-
-                    inp_ime[1].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_ime[1].ki.wVk = (short)VK["hiragana"];
-                    inp_ime[1].ki.wScan = (short)MapVirtualKey(inp_ime[1].ki.wVk, 0);
-                    inp_ime[1].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
-                    inp_ime[1].ki.dwExtraInfo = 0;
-                    inp_ime[1].ki.time = 0;
-
-                    // キーボード操作実行（全角半角）
-                    SendInput(num_ime, ref inp_ime[0], Marshal.SizeOf(inp_ime[0]));
+                    AddInput(KEYDOWN, "hiragana");
+                    AddInput(KEYUP, "hiragana");
 
                     break;
 
@@ -286,219 +247,84 @@ namespace test_2
                 case "fn_basis":
                 case "special_basis":
 
-                    num_ime = 4;
-                    inp_ime = new INPUT[num_ime];
-
-                    //半角状態にする
-
                     //まず、全角状態にする
-                    inp_ime[0].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_ime[0].ki.wVk = (short)VK["hiragana"];
-                    inp_ime[0].ki.wScan = (short)MapVirtualKey(inp_ime[0].ki.wVk, 0);
-                    inp_ime[0].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYDOWN;
-                    inp_ime[0].ki.dwExtraInfo = 0;
-                    inp_ime[0].ki.time = 0;
+                    AddInput(KEYDOWN, "hiragana");
+                    AddInput(KEYUP, "hiragana");
 
-                    inp_ime[1].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_ime[1].ki.wVk = (short)VK["hiragana"];
-                    inp_ime[1].ki.wScan = (short)MapVirtualKey(inp_ime[1].ki.wVk, 0);
-                    inp_ime[1].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
-                    inp_ime[1].ki.dwExtraInfo = 0;
-                    inp_ime[1].ki.time = 0;
-
-                    //次に、半角状態にする
-                    inp_ime[2].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_ime[2].ki.wVk = (short)VK["hankaku/zenkaku"];
-                    inp_ime[2].ki.wScan = (short)MapVirtualKey(inp_ime[2].ki.wVk, 0);
-                    inp_ime[2].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYDOWN;
-                    inp_ime[2].ki.dwExtraInfo = 0;
-                    inp_ime[2].ki.time = 0;
-
-                    inp_ime[3].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_ime[3].ki.wVk = (short)VK["hankaku/zenkaku"];
-                    inp_ime[3].ki.wScan = (short)MapVirtualKey(inp_ime[3].ki.wVk, 0);
-                    inp_ime[3].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
-                    inp_ime[3].ki.dwExtraInfo = 0;
-                    inp_ime[3].ki.time = 0;
-
-                    // キーボード操作実行（全角半角）
-                    SendInput(num_ime, ref inp_ime[0], Marshal.SizeOf(inp_ime[0]));
+                    //次に、半角状態にする（最終的に半角）
+                    AddInput(KEYDOWN, "hankaku/zenkaku");
+                    AddInput(KEYUP, "hankaku/zenkaku");
 
                     break;
 
                 case "cmd_basis":
+
                     //cmd_basisで送信処理まで来るのは送信ボタンのみ
                     //cmdList内に値が入っている場合　かつ　送信ボタンの場合
                     if (cmdList.Count > 0)
                     {
-                        num_cmd_send = cmdList.Count * 2;
-                        inp_cmd_send = new INPUT[num_cmd_send];
-
-                        int index_cmd_send = 0;
-
                         //キーボード操作実行用のデータに仮想キーコードを格納
                         for (int i = 0; i < cmdList.Count; i++)
                         {
-
-                            //down
-
-                            inp_cmd_send[index_cmd_send].type = INPUT_KEYBOARD;
-                            //ここに仮想キーコードを入れる
-                            inp_cmd_send[index_cmd_send].ki.wVk = (short)VK[cmdList[i]];
-                            inp_cmd_send[index_cmd_send].ki.wScan = (short)MapVirtualKey(inp_cmd_send[index_cmd_send].ki.wVk, 0);
-                            inp_cmd_send[index_cmd_send].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYDOWN;
-                            inp_cmd_send[index_cmd_send].ki.dwExtraInfo = 0;
-                            inp_cmd_send[index_cmd_send].ki.time = 0;
-
-                            index_cmd_send++;
-
-                            //up
-
-                            inp_cmd_send[index_cmd_send].type = INPUT_KEYBOARD;
-                            //ここに仮想キーコードを入れる
-                            inp_cmd_send[index_cmd_send].ki.wVk = (short)VK[cmdList[i]];
-                            inp_cmd_send[index_cmd_send].ki.wScan = (short)MapVirtualKey(inp_cmd_send[index_cmd_send].ki.wVk, 0);
-                            inp_cmd_send[index_cmd_send].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
-                            inp_cmd_send[index_cmd_send].ki.dwExtraInfo = 0;
-
-                            index_cmd_send++;
-
+                            AddInput(KEYDOWN, cmdList[i]);
+                            AddInput(KEYUP, cmdList[i]);
                         }
-
-                        //キーボード操作実行（コマンド送信）
-                        SendInput(num_cmd_send, ref inp_cmd_send[0], Marshal.SizeOf(inp_cmd_send[0]));
-
-                        cmdList.Clear();
-
-                        
                     }
 
-                    //debug
-                    this.Visible = true;
+                    break;
 
-                    //関数から抜ける
-                    return;
-
-                //エラーの場合
+                //Error
                 default:
-
                     Console.WriteLine("Error → basisState.name = {0}", basisState.name);
-
-
-
                     break;
             }
 
-
-
-            //value内のデータを送信する
-
-
-            //命令要素数変数
-            int num = 0;
-
-            //配列の全要素数取得
-            for (int i = 0; i < key.value.Length; i++)
-            {
-                for (int k = 0; k < key.value[i].Length; k++)
-                {
-                    num++;
-                }
-            }
-
-            //DownとUpがあるため2倍
-            num *= 2;
-
-            //キーボード操作実行用のデータ
-            INPUT[] inp = new INPUT[num]; 
-
-            //キーボード操作実行用のデータの添え字用変数
-            int index = 0;
-
             //コマンドが入力状態の時（down)
-            if(cmdList.Count > 0)
+            if (cmdList.Count > 0)
             {
                 //down
-
-                INPUT[] inp_cmd_down = new INPUT[cmdList.Count];
-
-                for(int i = 0;i < cmdList.Count; i++)
+                for (int i = 0; i < cmdList.Count; i++)
                 {
-                    inp_cmd_down[i].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_cmd_down[i].ki.wVk = (short)VK[cmdList[i]];
-                    inp_cmd_down[i].ki.wScan = (short)MapVirtualKey(inp_cmd_down[i].ki.wVk, 0);
-                    inp_cmd_down[i].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYDOWN;
-                    inp_cmd_down[i].ki.dwExtraInfo = 0;
+                    AddInput(KEYDOWN, cmdList[i]);
                 }
-
-                // キーボード操作実行（cmd down）
-                SendInput(cmdList.Count, ref inp_cmd_down[0], Marshal.SizeOf(inp_cmd_down[0]));
             }
-
 
 
             //キーボード操作実行用のデータに仮想キーコードを格納
-            for (int i = 0; i < key.value.Length; i++)
+            if (key.value != null)
             {
-                for (int k = 0; k < key.value[i].Length; k++, index++)
+                for (int i = 0; i < key.value.Length; i++)
                 {
-                    //down
+                    for (int k = 0; k < key.value[i].Length; k++)
+                    {
+                        //down
+                        AddInput(KEYDOWN, key.value[i][k]);
+                    }
 
-                    inp[index].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    //key.value[i][k]の値で辞書型VKから16進数を持ってきている
-                    inp[index].ki.wVk = (short)VK[key.value[i][k]];
-                    inp[index].ki.wScan = (short)MapVirtualKey(inp[index].ki.wVk, 0);
-                    inp[index].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYDOWN;
-                    inp[index].ki.dwExtraInfo = 0;
-                    inp[index].ki.time = 0;
-                }
-
-                for (int k = key.value[i].Length; k > 0; k--, index++)
-                {
-                    //up
-
-                    inp[index].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    //key.value[i][k-1]の値で辞書型VKから16進数を持ってきている
-                    inp[index].ki.wVk = (short)VK[key.value[i][k - 1]];
-                    inp[index].ki.wScan = (short)MapVirtualKey(inp[index].ki.wVk, 0);
-                    inp[index].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
-                    inp[index].ki.dwExtraInfo = 0;
-                    inp[index].ki.time = 0;
+                    for (int k = key.value[i].Length; k > 0; k--)
+                    {
+                        //up
+                        AddInput(KEYUP, key.value[i][k - 1]);
+                    }
                 }
             }
-
-
-
-            // キーボード操作実行（メイン）
-            SendInput(num, ref inp[0], Marshal.SizeOf(inp[0]));
 
 
             //コマンドが入力状態の時（up)
             if (cmdList.Count > 0)
             {
                 //up
-
-                INPUT[] inp_cmd_up = new INPUT[cmdList.Count];
-
                 for (int i = 0; i < cmdList.Count; i++)
                 {
-                    inp_cmd_up[i].type = INPUT_KEYBOARD;
-                    //ここに仮想キーコードを入れる
-                    inp_cmd_up[i].ki.wVk = (short)VK[cmdList[i]];
-                    inp_cmd_up[i].ki.wScan = (short)MapVirtualKey(inp_cmd_up[i].ki.wVk, 0);
-                    inp_cmd_up[i].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
-                    inp_cmd_up[i].ki.dwExtraInfo = 0;
+                    AddInput(KEYUP, cmdList[i]);
                 }
+            }
 
-                // キーボード操作実行（cmd up）
-                SendInput(cmdList.Count, ref inp_cmd_up[0], Marshal.SizeOf(inp_cmd_up[0]));
+            //キーボード操作実行
+            if (inp.Count > 0)
+            {
+                INPUT[] inpArray = inp.ToArray();
+                SendInput(inp.Count, ref inpArray[0], Marshal.SizeOf(inp[0]));
             }
 
             // 1000ミリ秒スリープ
@@ -507,9 +333,11 @@ namespace test_2
             // 自ウインドウを表示
             this.Visible = true;
 
+            //初期化
+            inp.Clear();
+            cmdList.Clear();
 
-
-            //currentState（現在の画面）を basisState（デフォルトの画面）を上書き
+            //currentState（現在の画面）を basisState（デフォルトの画面）で上書き
             currentState = basisState;
 
             //currentState値を基にデフォルト画面を構築する（ここは木下）
@@ -525,9 +353,6 @@ namespace test_2
             //debug
             textBox1.Text = key.value[0][0];
             Console.WriteLine("遷移成功");
-
-
-            //実際の処理
 
             //まず、currentState値を変更
             for (int i = 0; i < jsonData.data.Length; i++)
@@ -552,22 +377,23 @@ namespace test_2
         }
 
 
+        //仮想キーコード配列に値を入れる関数
+        public void AddInput(int keyEvent, string value)
+        {
+            inp.Add(new INPUT
+            {
+                type = INPUT_KEYBOARD,
+                ki = new KEYBDINPUT
+                {
+                    wVk = (short)VK[value],  // 仮想キーコード
+                    wScan = (short)MapVirtualKey((short)VK[value], 0),
+                    dwFlags = EXTENDEDKEY | keyEvent,
+                    dwExtraInfo = 0,
+                    time = 0
+                }
+            });
+        }
+
     }
 }
-
-/*
-・状態変数名定義
-大きく分けて二つに分ける
-    ・kana
-    かな文字のデフォルト:kana_basis
-    かな文字のあ行      :kana_row_a
-
-    ・alpha(alphanumeric)
-    英数字のデフォルト  :alpha_basis
-    英数字のa行(a,b,c)  :alpha_row_a
-
-・上記以外の変数名定義
-    ・2単語以上の場合
-    1つ目の最初の文字が小文字、2つ目以降の最初の文字は大文字
-*/
 
