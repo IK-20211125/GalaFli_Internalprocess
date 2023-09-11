@@ -1,6 +1,127 @@
 {
   "data": [
     {
+      "name": "special_basis",
+      "basis": true,
+      "keys": [
+        {
+          "keyname": "T_tab",
+          "action": null,
+          "value": null,
+          "text": "NL"
+        },
+        {
+          "keyname": "T_slash",
+          "action": "send",
+          "value": [ [ "apps" ] ],
+          "text": "Apps"
+        },
+        {
+          "keyname": "T_asterisk",
+          "action": "send",
+          "value": [ [ "esc" ] ],
+          "text": "Esc"
+        },
+        {
+          "keyname": "T_minus",
+          "action": null,
+          "value": null,
+          "text": ""
+        },
+        {
+          "keyname": "T7",
+          "action": "send",
+          "value": [ [ "printscreen" ] ],
+          "text": "Psc"
+        },
+        {
+          "keyname": "T8",
+          "action": "send",
+          "value": [ [ "scrolllock" ] ],
+          "text": "Slk"
+        },
+        {
+          "keyname": "T9",
+          "action": "send",
+          "value": [ [ "pause" ] ],
+          "text": "Pau"
+        },
+        {
+          "keyname": "T_plus",
+          "action": "transition",
+          "value": [ [ "mode_list" ] ],
+          "text": "Fn"
+        },
+        {
+          "keyname": "T4",
+          "action": "send",
+          "value": [ [ "insert" ] ],
+          "text": "Ins"
+        },
+        {
+          "keyname": "T5",
+          "action": "send",
+          "value": [ [ "home" ] ],
+          "text": "Home"
+        },
+        {
+          "keyname": "T6",
+          "action": "send",
+          "value": [ [ "pageup" ] ],
+          "text": "Pup"
+        },
+
+        {
+          "keyname": "T_bs",
+          "action": null,
+          "value": null,
+          "text": ""
+        },
+        {
+          "keyname": "T1",
+          "action": "send",
+          "value": [ [ "delete" ] ],
+          "text": "Del"
+        },
+        {
+          "keyname": "T2",
+          "action": "send",
+          "value": [ [ "end" ] ],
+          "text": "End"
+        },
+        {
+          "keyname": "T3",
+          "action": "send",
+          "value": [ [ "pagedown" ] ],
+          "text": "Pdn"
+        },
+        {
+          "keyname": "T_enter",
+          "action": null,
+          "value": null,
+          "text": ""
+        },
+        {
+          "keyname": "T0",
+          "action": null,
+          "value": null,
+          "text": ""
+        },
+        {
+          "keyname": "T000",
+          "action": "send",
+          "value": [ [ "conversion" ] ],
+          "text": "変換"
+        },
+        {
+          "keyname": "T_dot",
+          "action": "send",
+          "value": [ [ "noconversion" ] ],
+          "text": "無変"
+        }
+      ]
+    },
+    {
       "name": "cmd_basis",
       "basis": true,
       "keys": [
@@ -31,20 +152,20 @@
         {
           "keyname": "T7",
           "action": "send",
-          "value": [ [ "sending" ] ],
-          "text": "゛"
+          "value": null,
+          "text": "送信"
         },
         {
           "keyname": "T8",
           "action": "cmd",
           "value": [ [ "leftctrl" ] ],
-          "text": "Lct"
+          "text": "Lctr"
         },
         {
           "keyname": "T9",
           "action": "cmd",
           "value": [ [ "rightctrl" ] ],
-          "text": "Rct"
+          "text": "Rctr"
         },
         {
           "keyname": "T_plus",
@@ -56,7 +177,7 @@
           "keyname": "T4",
           "action": "delete",
           "value": null,
-          "text": "解"
+          "text": "解除"
         },
         {
           "keyname": "T5",
